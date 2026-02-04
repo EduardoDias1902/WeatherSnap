@@ -21,18 +21,18 @@
         <div class="flex gap-2">
             <input id="cityInput" type="text" placeholder="Buscar Cidade..."
                 class="flex-1 px-3 py-2 rouded bg-slate-700 focus:outline-none" />
-            <button id="searchBTN" class="px-4 py-2 bg-blue-500 rouded hover:bg-blue-600">
+            <button id="searchBtn" class="px-4 py-2 bg-blue-500 rouded hover:bg-blue-600">
                 Buscar
             </button>
         </div>
     </div>
 
-    <div id="wetherRESULTS" class="hidden space-y-3 text-center">
-        <h2 id="cityNAME" class="text-lg font-semibold"></h2>
+    <div id="wetherResult" class="hidden space-y-3 text-center">
+        <h2 id="cityName" class="text-lg font-semibold"></h2>
         <div class="text-5x1 font-bold">
             <span id="temperature"></span>°C
         </div>
-        <p id="wetherCONDITIONS"></p>
+        <p id="wetherCondition"></p>
 
         <p id="suggestion" class="text-sm italic text-slate-300"></p>
         <div id="forecast" class="grid grid-cols-3 gap-2 text-sm"></div>
