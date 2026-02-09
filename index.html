@@ -3,41 +3,167 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherSnap - Previsão do Tempo</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
         tailwind.config = {
             darkMode: 'class'
         }
     </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        .animate-rotate {
+            animation: rotate 20s linear infinite;
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
 </head>
 
-<body class="bg-slate-900 text-white min-h-screen flex item-center justify-center">
+<body class="min-h-screen transition-all duration-500">
+    <!-- Container Principal -->
+    <div id="app" class="min-h-screen flex flex-col items-center justify-start py-8 px-4 md:px-8">
+        
+        <!-- Cabeçalho -->
+        <header class="w-full max-w-2xl mb-6">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <h1 class="text-3xl md:text-4xl font-bold text-center">WeatherSnap</h1>
+                <svg id="headerIcon" class="w-8 h-8 animate-float" fill="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5" />
+                </svg>
+            </div>
+            
+            <!-- Navegação -->
+            <nav class="flex justify-center gap-6 mb-6">
+                <button class="text-sm md:text-base font-medium hover:underline">Início</button>
+                <button class="text-sm md:text-base font-medium hover:underline flex items-center gap-1">
+                    Comparar
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+            </nav>
+        </header>
 
-    <div id="app" class="w-full max-w-md bg-slate-800 rounded-x1 shadow-lg p-6 space-y-4">
-        <h1 class="text-x1 font-bold text-center">WeatherSnap</h1>
+        <!-- Card Principal -->
+        <div class="w-full max-w-2xl bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 md:p-8 space-y-6 transition-all duration-500">
+            
+            <!-- Campo de Busca -->
+            <div class="flex gap-2 mb-4">
+                <div class="flex-1 relative">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input 
+                        id="cityInput" 
+                        type="text" 
+                        placeholder="Buscar cidade..." 
+                        class="w-full pl-10 pr-4 py-3 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 text-white placeholder-white placeholder-opacity-60"
+                    />
+                </div>
+                <button 
+                    id="searchBtn" 
+                    class="px-6 py-3 bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-lg hover:shadow-xl"
+                >
+                    Buscar
+                </button>
+            </div>
 
-        <div class="flex gap-2">
-            <input id="cityInput" type="text" placeholder="Buscar Cidade..."
-                class="flex-1 px-3 py-2 rouded bg-slate-700 focus:outline-none" />
-            <button id="searchBtn" class="px-4 py-2 bg-blue-500 rouded hover:bg-blue-600">
-                Buscar
-            </button>
+            <!-- Resultado do Tempo (inicialmente oculto) -->
+            <div id="weatherResult" class="hidden space-y-6">
+                
+                <!-- Cabeçalho da Cidade -->
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 id="cityName" class="text-2xl md:text-3xl font-semibold"></h2>
+                        <p id="currentDate" class="text-sm opacity-75 mt-1"></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="shareBtn" class="p-2 rounded-full bg-white bg-opacity-10 hover:bg-opacity-20 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Condições Atuais -->
+                <div class="flex items-center justify-center gap-6 py-6">
+                    <div id="weatherIcon" class="w-24 h-24 md:w-32 md:h-32">
+                        <!-- Ícone será inserido aqui via JavaScript -->
+                    </div>
+                    <div class="text-center">
+                        <div class="text-6xl md:text-7xl font-bold">
+                            <span id="temperature"></span><span class="text-4xl">°C</span>
+                        </div>
+                        <p id="weatherCondition" class="text-lg md:text-xl mt-2 opacity-90"></p>
+                    </div>
+                </div>
+
+                <!-- Detalhes Adicionais -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4 flex items-center gap-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <div>
+                            <p class="text-xs opacity-75">Vento</p>
+                            <p id="windSpeed" class="text-lg font-semibold"></p>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-10 rounded-lg p-4 flex items-center gap-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                        </svg>
+                        <div>
+                            <p class="text-xs opacity-75">Umidade</p>
+                            <p id="humidity" class="text-lg font-semibold"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sugestão Inteligente -->
+                <div id="suggestionBox" class="bg-white bg-opacity-10 rounded-lg p-4 border-l-4 border-yellow-400">
+                    <p id="suggestion" class="text-sm md:text-base italic"></p>
+                </div>
+
+                <!-- Previsão para os Próximos Dias -->
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold mb-4">Próximos dias</h3>
+                    <div id="forecast" class="grid grid-cols-3 gap-3 md:gap-4">
+                        <!-- Previsões serão inseridas aqui via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensagem de Loading -->
+            <div id="loading" class="hidden text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+                <p class="mt-4 opacity-75">Carregando dados meteorológicos...</p>
+            </div>
+
+            <!-- Mensagem de Erro -->
+            <div id="error" class="hidden bg-red-500 bg-opacity-20 border border-red-500 rounded-lg p-4 text-center">
+                <p id="errorMessage" class="text-red-200"></p>
+            </div>
         </div>
     </div>
-
-    <div id="wetherResult" class="hidden space-y-3 text-center">
-        <h2 id="cityName" class="text-lg font-semibold"></h2>
-        <div class="text-5x1 font-bold">
-            <span id="temperature"></span>°C
-        </div>
-        <p id="wetherCondition"></p>
-
-        <p id="suggestion" class="text-sm italic text-slate-300"></p>
-        <div id="forecast" class="grid grid-cols-3 gap-2 text-sm"></div>
-    </div>
-
 
     <script src="script.js"></script>
 </body>
