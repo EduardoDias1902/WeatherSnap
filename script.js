@@ -1,3 +1,5 @@
+
+
 const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const weatherResult = document.getElementById("weatherResult");
@@ -6,6 +8,26 @@ const temperature = document.getElementById("temperature");
 const weatherCondition = document.getElementById("weatherCondition");
 const suggestion = document.getElementById("suggestion");
 const forecast = document.getElementById("forecast")
+
+function applyTheme(){
+    const hour = new Date().getHours();
+    const isNight = hour >= 18 || hour < 6;
+
+    document.body.classList.toggle("dark", isNight);
+}
+
+function getSuggestion(code){
+    if (code < 3) return "Ideal para uma caminhada!";
+    if (code <60) return "Que tal um café e um bom livro?"
+    return "leve um guarda-chuva!"
+}
+
+function getCondition(code){
+    if (code < 3) return "Ensolarado"
+    if (code <60) return "Nublado";
+    return "Chuvoso";
+}
+
 
 searchBtn.addEventListener("click",() => {
     getWeather (cityInput.value);
@@ -65,10 +87,5 @@ function showWeather (city, data){
     }
     applyTheme();
 
-    function applyTheme(){
-        const hour = new Date().getHours();
-        const isNight = hour >= 18 || hour < 6;
-
-        document.body.classList.toggle("dark", isNight);
-    }
+    
 }
