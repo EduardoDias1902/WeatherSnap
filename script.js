@@ -363,21 +363,5 @@ cityInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Compartilhar resultado
-shareBtn.addEventListener('click', () => {
-    if (navigator.share && weatherResult.classList.contains('hidden') === false) {
-        navigator.share({
-            title: `Tempo em ${cityName.textContent}`,
-            text: `Temperatura: ${temperature.textContent}°C - ${weatherCondition.textContent}`,
-        }).catch(err => console.log('Erro ao compartilhar:', err));
-    } else {
-        // Fallback: copia para área de transferência
-        const text = `Tempo em ${cityName.textContent}: ${temperature.textContent}°C - ${weatherCondition.textContent}`;
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Informações copiadas para a área de transferência!');
-        });
-    }
-});
-
 // Inicialização: aplica tema inicial baseado na hora
 applyTheme(2, new Date().getHours());
